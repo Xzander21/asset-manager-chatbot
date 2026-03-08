@@ -64,13 +64,13 @@ else
 
     <!-- Filters & Search -->
     <MudPaper Class="pa-4 mb-4" Elevation="1">
-        <MudGrid>
-            <MudItem xs="12" sm="4">
+        <MudGrid Spacing="3">
+            <MudItem xs="12">
                 <MudTextField @bind-Value="_searchText" Label="Search by name or serial" Adornment="Adornment.Start"
                               AdornmentIcon="@Icons.Material.Filled.Search" Clearable="true"
                               Immediate="true" />
             </MudItem>
-            <MudItem xs="12" sm="3">
+            <MudItem xs="12" sm="4">
                 <MudSelect T="string" Label="Filter by Room" @bind-Value="_filterRoom" Clearable="true">
                     <MudSelectItem Value="@("")">All Rooms</MudSelectItem>
                     @foreach (var room in _rooms)
@@ -79,7 +79,7 @@ else
                     }
                 </MudSelect>
             </MudItem>
-            <MudItem xs="12" sm="3">
+            <MudItem xs="12" sm="4">
                 <MudSelect T="string" Label="Filter by Status" @bind-Value="_filterStatus" Clearable="true">
                     <MudSelectItem Value="@("")">All Statuses</MudSelectItem>
                     <MudSelectItem Value="@("Active")">Active</MudSelectItem>
@@ -88,7 +88,7 @@ else
                     <MudSelectItem Value="@("Decommissioned")">Decommissioned</MudSelectItem>
                 </MudSelect>
             </MudItem>
-            <MudItem xs="12" sm="2" Class="d-flex align-end">
+            <MudItem xs="12" sm="4" Class="d-flex align-end">
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add"
                            OnClick="@OpenAddDialog" FullWidth="true">Add Equipment</MudButton>
             </MudItem>

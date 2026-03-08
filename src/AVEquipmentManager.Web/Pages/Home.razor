@@ -1,0 +1,245 @@
+@page "/"
+@page "/dashboard"
+@inject EquipmentService EquipmentSvc
+@inject IDialogService DialogSvc
+@inject ISnackbar Snackbar
+
+<PageTitle>Dashboard - AV Equipment Manager</PageTitle>
+
+<MudText Typo="Typo.h4" Class="mb-4">Dashboard</MudText>
+
+@if (_loading)
+{
+    <MudProgressCircular Indeterminate="true" />
+}
+else
+{
+    <!-- Summary Cards -->
+    <MudGrid Class="mb-4">
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4" Elevation="2">
+                <MudStack Row AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.Devices" Color="Color.Primary" Size="Size.Large" />
+                    <div>
+                        <MudText Typo="Typo.h4">@_allEquipment.Count</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Total Equipment</MudText>
+                    </div>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4" Elevation="2">
+                <MudStack Row AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Size="Size.Large" />
+                    <div>
+                        <MudText Typo="Typo.h4">@_allEquipment.Count(e => e.Status == EquipmentStatus.Active)</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Active</MudText>
+                    </div>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4" Elevation="2">
+                <MudStack Row AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.Build" Color="Color.Warning" Size="Size.Large" />
+                    <div>
+                        <MudText Typo="Typo.h4">@_allEquipment.Count(e => e.Status == EquipmentStatus.UnderMaintenance)</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Under Maintenance</MudText>
+                    </div>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4" Elevation="2">
+                <MudStack Row AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.Archive" Color="Color.Error" Size="Size.Large" />
+                    <div>
+                        <MudText Typo="Typo.h4">@_allEquipment.Count(e => e.Status == EquipmentStatus.Retired || e.Status == EquipmentStatus.Decommissioned)</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Retired / Decommissioned</MudText>
+                    </div>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <!-- Filters & Search -->
+    <MudPaper Class="pa-4 mb-4" Elevation="1">
+        <MudGrid>
+            <MudItem xs="12" sm="4">
+                <MudTextField @bind-Value="_searchText" Label="Search by name or serial" Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search" Clearable="true"
+                              Immediate="true" />
+            </MudItem>
+            <MudItem xs="12" sm="3">
+                <MudSelect T="string" Label="Filter by Room" @bind-Value="_filterRoom" Clearable="true">
+                    <MudSelectItem Value="@("")">All Rooms</MudSelectItem>
+                    @foreach (var room in _rooms)
+                    {
+                        <MudSelectItem Value="@room">@room</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="3">
+                <MudSelect T="string" Label="Filter by Status" @bind-Value="_filterStatus" Clearable="true">
+                    <MudSelectItem Value="@("")">All Statuses</MudSelectItem>
+                    <MudSelectItem Value="@("Active")">Active</MudSelectItem>
+                    <MudSelectItem Value="@("UnderMaintenance")">Under Maintenance</MudSelectItem>
+                    <MudSelectItem Value="@("Retired")">Retired</MudSelectItem>
+                    <MudSelectItem Value="@("Decommissioned")">Decommissioned</MudSelectItem>
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="2" Class="d-flex align-end">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add"
+                           OnClick="@OpenAddDialog" FullWidth="true">Add Equipment</MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    <!-- Equipment Table -->
+    <MudTable Items="@FilteredEquipment" Dense="true" Hover="true" Breakpoint="Breakpoint.Sm"
+              SortLabel="Sort by" AllowUnsorted="false" Striped="true">
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortBy="new Func<EquipmentDto, object>(x => x.Name)">Name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<EquipmentDto, object>(x => x.SerialNumber)">Serial Number</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<EquipmentDto, object>(x => x.RoomName)">Room</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<EquipmentDto, object>(x => x.DateInstalled)">Date Installed</MudTableSortLabel></MudTh>
+            <MudTh>Expected Life</MudTh>
+            <MudTh>Remaining Life</MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<EquipmentDto, object>(x => x.Status.ToString())">Status</MudTableSortLabel></MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Serial Number">@context.SerialNumber</MudTd>
+            <MudTd DataLabel="Room">@context.RoomName</MudTd>
+            <MudTd DataLabel="Date Installed">@context.DateInstalled.ToString("yyyy-MM-dd")</MudTd>
+            <MudTd DataLabel="Expected Life">@context.ExpectedLifeInYears yr(s)</MudTd>
+            <MudTd DataLabel="Remaining Life">
+                @{
+                    var remaining = GetRemainingLife(context);
+                }
+                @if (remaining.IsExpired)
+                {
+                    <MudText Color="Color.Error">Expired</MudText>
+                }
+                else
+                {
+                    <MudText>@remaining.Display</MudText>
+                }
+            </MudTd>
+            <MudTd DataLabel="Status">
+                <MudChip T="string" Color="@GetStatusColor(context.Status)" Size="Size.Small">
+                    @context.Status
+                </MudChip>
+            </MudTd>
+            <MudTd DataLabel="Actions">
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary"
+                               OnClick="@(() => OpenEditDialog(context))" />
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small"
+                               Color="@(CanDelete(context) ? Color.Error : Color.Default)"
+                               Disabled="@(!CanDelete(context))"
+                               OnClick="@(() => OpenDeleteDialog(context))" />
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+}
+
+@code {
+    private List<EquipmentDto> _allEquipment = new();
+    private List<string> _rooms = new();
+    private bool _loading = true;
+    private string _searchText = "";
+    private string _filterRoom = "";
+    private string _filterStatus = "";
+
+    private IEnumerable<EquipmentDto> FilteredEquipment => _allEquipment.Where(e =>
+        (string.IsNullOrWhiteSpace(_searchText) ||
+         e.Name.Contains(_searchText, StringComparison.OrdinalIgnoreCase) ||
+         e.SerialNumber.Contains(_searchText, StringComparison.OrdinalIgnoreCase)) &&
+        (string.IsNullOrWhiteSpace(_filterRoom) || e.RoomName == _filterRoom) &&
+        (string.IsNullOrWhiteSpace(_filterStatus) || e.Status.ToString() == _filterStatus));
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        _loading = true;
+        try
+        {
+            _allEquipment = await EquipmentSvc.GetAllAsync();
+            _rooms = await EquipmentSvc.GetRoomsAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading data: {ex.Message}", Severity.Error);
+        }
+        _loading = false;
+    }
+
+    private async Task OpenAddDialog()
+    {
+        var parameters = new DialogParameters
+        {
+            ["Equipment"] = null,
+            ["Rooms"] = _rooms
+        };
+        var dialog = await DialogSvc.ShowAsync<EquipmentDialog>("Add Equipment", parameters);
+        var result = await dialog.Result;
+        if (!result!.Canceled)
+            await LoadDataAsync();
+    }
+
+    private async Task OpenEditDialog(EquipmentDto equipment)
+    {
+        var parameters = new DialogParameters
+        {
+            ["Equipment"] = equipment,
+            ["Rooms"] = _rooms
+        };
+        var dialog = await DialogSvc.ShowAsync<EquipmentDialog>("Edit Equipment", parameters);
+        var result = await dialog.Result;
+        if (!result!.Canceled)
+            await LoadDataAsync();
+    }
+
+    private async Task OpenDeleteDialog(EquipmentDto equipment)
+    {
+        var parameters = new DialogParameters
+        {
+            ["Equipment"] = equipment
+        };
+        var dialog = await DialogSvc.ShowAsync<DeleteEquipmentDialog>("Delete Equipment", parameters);
+        var result = await dialog.Result;
+        if (!result!.Canceled)
+            await LoadDataAsync();
+    }
+
+    private static bool CanDelete(EquipmentDto e) =>
+        e.Status == EquipmentStatus.Retired || e.Status == EquipmentStatus.Decommissioned;
+
+    private static Color GetStatusColor(EquipmentStatus status) => status switch
+    {
+        EquipmentStatus.Active => Color.Success,
+        EquipmentStatus.UnderMaintenance => Color.Warning,
+        EquipmentStatus.Retired => Color.Error,
+        EquipmentStatus.Decommissioned => Color.Default,
+        _ => Color.Default
+    };
+
+    private static (string Display, bool IsExpired) GetRemainingLife(EquipmentDto e)
+    {
+        var endDate = e.DateInstalled.AddYears(e.ExpectedLifeInYears);
+        var remaining = endDate - DateTime.UtcNow;
+        if (remaining.TotalDays <= 0)
+            return ("Expired", true);
+        int years = (int)(remaining.TotalDays / 365);
+        int months = (int)((remaining.TotalDays % 365) / 30);
+        return ($"{years}y {months}m", false);
+    }
+}

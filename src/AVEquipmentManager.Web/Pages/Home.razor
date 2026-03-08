@@ -66,6 +66,7 @@ else
     <MudPaper Class="pa-4 mb-4" Elevation="1">
         <MudGrid Spacing="3">
             <MudItem xs="12">
+<<<<<<< HEAD
                 <MudTextField @bind-Value="_searchText" Label="Search by name or serial" Adornment="Adornment.Start"
                               AdornmentIcon="@Icons.Material.Filled.Search" Clearable="true"
                               Immediate="true" />
@@ -73,24 +74,44 @@ else
             <MudItem xs="12" sm="4">
                 <MudSelect T="string" Label="Filter by Room" @bind-Value="_filterRoom" Clearable="true">
                     <MudSelectItem Value="@("")">All Rooms</MudSelectItem>
+=======
+                <MudTextField @bind-Value="_searchText" Label="Search by name or serial" Variant="Variant.Outlined"
+                              Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" 
+                              Clearable="true" Immediate="true" />
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <MudSelect T="string" Label="Filter by Room" @bind-Value="_filterRoom" Variant="Variant.Outlined"
+                           Clearable="true" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                    <MudSelectItem T="string" Value="@("")">All Rooms</MudSelectItem>
+>>>>>>> 304c5495bc6bf0e312e6ee7ebb524036f1569a56
                     @foreach (var room in _rooms)
                     {
-                        <MudSelectItem Value="@room">@room</MudSelectItem>
+                        <MudSelectItem T="string" Value="@room">@room</MudSelectItem>
                     }
                 </MudSelect>
             </MudItem>
             <MudItem xs="12" sm="4">
+<<<<<<< HEAD
                 <MudSelect T="string" Label="Filter by Status" @bind-Value="_filterStatus" Clearable="true">
                     <MudSelectItem Value="@("")">All Statuses</MudSelectItem>
                     <MudSelectItem Value="@("Active")">Active</MudSelectItem>
                     <MudSelectItem Value="@("UnderMaintenance")">Under Maintenance</MudSelectItem>
                     <MudSelectItem Value="@("Retired")">Retired</MudSelectItem>
                     <MudSelectItem Value="@("Decommissioned")">Decommissioned</MudSelectItem>
+=======
+                <MudSelect T="string" Label="Filter by Status" @bind-Value="_filterStatus" Variant="Variant.Outlined"
+                           Clearable="true" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter">
+                    <MudSelectItem T="string" Value="@("")">All Statuses</MudSelectItem>
+                    <MudSelectItem T="string" Value="@("Active")">Active</MudSelectItem>
+                    <MudSelectItem T="string" Value="@("UnderMaintenance")">Under Maintenance</MudSelectItem>
+                    <MudSelectItem T="string" Value="@("Retired")">Retired</MudSelectItem>
+                    <MudSelectItem T="string" Value="@("Decommissioned")">Decommissioned</MudSelectItem>
+>>>>>>> 304c5495bc6bf0e312e6ee7ebb524036f1569a56
                 </MudSelect>
             </MudItem>
             <MudItem xs="12" sm="4" Class="d-flex align-end">
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add"
-                           OnClick="@OpenAddDialog" FullWidth="true">Add Equipment</MudButton>
+                           OnClick="@OpenAddDialog" FullWidth="true" Style="height:56px;">+ ADD EQUIPMENT</MudButton>
             </MudItem>
         </MudGrid>
     </MudPaper>

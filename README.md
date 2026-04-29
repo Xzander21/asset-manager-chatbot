@@ -86,6 +86,23 @@ Edit the `Initialize` method to change the default equipment entries. The seed d
 **Web** (`src/AVEquipmentManager.Web/wwwroot/appsettings.json`):
 - `ApiBaseUrl` — API base URL
 
+## Prototype
+
+An interactive click-through web prototype (Figma-like) is included in the [`prototype/`](prototype/) directory.  
+It runs entirely in the browser — no build step or backend required.
+
+**Quick start:**
+```bash
+cd prototype
+python -m http.server 8080
+# open http://localhost:8080
+```
+
+Screens covered: Login, Dashboard, Asset Detail, Chatbot, Settings.  
+See [`prototype/README.md`](prototype/README.md) for the full walkthrough, mock-data instructions, and chatbot command reference.
+
+---
+
 ## Future Roadmap
 
 - **MAUI Blazor Hybrid**: Convert the Blazor WASM frontend to a MAUI Blazor Hybrid app for cross-platform mobile support (iOS, Android, Windows, macOS)
